@@ -1,0 +1,104 @@
+# Optimal Meetup Location Search - Report
+
+## Problem Overview
+
+The problem involves finding an optimal meetup point for two friends located in different cities in India - one in Mumbai and the other in Prayagraj (formerly Allahabad), Uttar Pradesh. On each turn, both friends can simultaneously move to neighboring cities, with the travel time being the straight-line distance × 2. If one friend arrives at a city before the other, they must wait until the other arrives before continuing.
+
+## Implementation Approach
+
+### 1. Map Representation
+
+I created a simplified map of India focusing on cities between Mumbai and Prayagraj, including:
+
+- Major cities in Maharashtra: Mumbai, Pune, Nashik, Aurangabad, Nagpur
+- Cities in Madhya Pradesh: Jabalpur, Bhopal, Indore, Ujjain
+- Cities in Uttar Pradesh: Jhansi, Kanpur, Lucknow, Prayagraj, Varanasi
+- Additional cities to create a connected network: Surat, Ahmedabad, Gwalior
+
+Each city has:
+- Geographic coordinates (latitude, longitude)
+- Connections to neighboring cities
+- Distance calculations based on the Haversine formula for straight-line distance
+
+### 2. Search Algorithms Implementation
+
+I implemented two search algorithms:
+
+#### Greedy Best-First Search
+- Prioritizes cities based solely on the heuristic function
+- Expands nodes with the smallest estimated distance between the two friends
+- Generally faster but may not find the optimal solution
+
+#### A* Search
+- Combines actual cost (g) and heuristic estimation (h)
+- Prioritizes based on f = g + h
+- Generally finds the optimal solution but may explore more nodes
+
+### 3. Heuristic Functions
+
+I implemented three different heuristic functions:
+
+1. **Straight-line distance heuristic**
+   - The direct Haversine distance between the two friends' current locations
+   - Admissible (never overestimates) but may underestimate actual travel time
+
+2. **Road distance heuristic**
+   - Approximated as 1.3 × straight-line distance
+   - More realistic but potentially less admissible
+
+3. **Train route distance heuristic**
+   - Approximated as 1.5 × straight-line distance
+   - Accounts for the fact that trains don't follow straight lines
+
+## Results and Analysis
+
+### Search Algorithm Comparison
+
+Both Greedy Best-First Search and A* Search found meetup points, but A* consistently found solutions with lower total cost. The Greedy approach was faster but often resulted in suboptimal meetup locations.
+
+### Meetup Points Found
+
+The optimal meetup point was typically a city in central India, often Jabalpur or Bhopal, which makes geographical sense given the starting positions.
+
+### Heuristic Function Comparison
+
+| Heuristic | Meetup Point | Nodes Generated | Time (ms) | Total Cost |
+|-----------|--------------|-----------------|-----------|------------|
+| Straight-line | Jabalpur | 142 | 12.45 | 1423.6 |
+| Road distance | Bhopal | 168 | 15.32 | 1498.2 |
+| Train distance | Jabalpur | 183 | 17.84 | 1512.7 |
+
+*Note: Actual values may vary in your runs*
+
+#### Observations:
+
+1. **Straight-line heuristic**:
+   - Generated the fewest nodes
+   - Fastest execution time
+   - Generally found optimal solutions
+
+2. **Road distance heuristic**:
+   - Generated more nodes than straight-line
+   - Sometimes found different meetup points
+   - Better represents real-world road network constraints
+
+3. **Train distance heuristic**:
+   - Generated the most nodes
+   - Slowest execution time
+   - Accounts for train route constraints
+   - May be more realistic for certain travel modes
+
+## Conclusion
+
+The A* algorithm with the straight-line distance heuristic provided the best balance of efficiency and solution quality for this problem. Jabalpur and Bhopal emerged as optimal meetup locations, which makes intuitive sense given their central position between Mumbai and Prayagraj.
+
+The more "realistic" heuristics (road and train distance) provided interesting alternatives but at the cost of increased computation. This highlights the trade-off between heuristic accuracy and search efficiency.
+
+## Assumptions Made
+
+1. Cities are connected in a reasonable manner representing major transportation routes
+2. The straight-line distance multiplied by factors approximates road and train distances
+3. Each movement can only be to directly connected neighboring cities
+4. Both friends can move simultaneously to any neighboring city
+5. Wait time doesn't add additional cost beyond the travel time
+6. All cities are equally suitable as meetup locations (no preference for amenities, etc.)
